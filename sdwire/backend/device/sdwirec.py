@@ -36,8 +36,23 @@ class SDWireC(USBDevice):
             self.__block_dev = None
 
     def __str__(self) -> str:
-        block_dev_str = self.block_dev if self.block_dev is not None else "None"
-        return f"{self.serial_string:<30}[{self.product_string}]\t\t{block_dev_str}"
+    block_dev_str = self.block_dev if self.block_dev is not None else "None"
+
+    # Default status
+    status = "(TARGET)" 
+
+    # Check if the block device has a size > 0 (Meaning card is present)
+    if self.block_dev and self.block_dev.startswith('/dev/'):
+        try:
+            # Get the device name (e.g., sdb) to read sysfs
+            dev_name = self.block_dev.split('/')[-1]
+            with open(f"/sys/class/block/{dev_name}/size", "r") as f:
+                if int(f.read().strip()) > 0:
+                    status = "(HOST)"
+        except:
+            status = "(UNKNOWN)"
+
+    return f"{self.serial_string:<30}[{self.product_string}]\t\t{block_dev_str} {status}"
 
     def __repr__(self) -> str:
         return self.__str__()
