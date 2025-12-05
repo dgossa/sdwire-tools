@@ -52,7 +52,7 @@ def get_sdwirec_devices() -> List[SDWireC]:
             )
 
         # filter with product string to allow non Badger'd sdwire devices to be detected
-        if product == constants.SDWIREC_PRODUCT_STRING:
+        if product in [constants.SDWIREC_PRODUCT_STRING, "USBMUX", "sd-wire", "FT200X USB I2C"]:
             device_list.append(
                 SDWireC(port_info=PortInfo(None, product, manufacturer, serial, device))
             )
